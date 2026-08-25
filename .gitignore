@@ -1,0 +1,7 @@
+**/.sfdx/
+**/.sf/
+**/.git/
+**/node_modules/
+**/public/
+.env.local
+Untitled-1.json
