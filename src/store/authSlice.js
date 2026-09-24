@@ -2,9 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 const savedAuth = sessionStorage.getItem('auth');
 
-console.log('HERE 1');
-
-
 const initialState = savedAuth
     ? JSON.parse(savedAuth)
     : {
@@ -18,8 +15,11 @@ const initialState = savedAuth
 
 export const login = createAsyncThunk(
     'auth/login',
-    async ({ email, password }, thunkAPI) => {
+    async ({ email, password, token, expiresAt }, thunkAPI) => {
         try {
+            if (token) {
+                return { token: { access_token: token, expires_in: expiresAt } };
+            }
             const response = await fetch(
                 `${import.meta.env.VITE_BACKEND_ENDPOINT}/login`,
                 {
@@ -74,6 +74,10 @@ const authSlice = createSlice({
         });
 
         builder.addCase(login.fulfilled, (state, action) => {
+            console.log('Login fulfilled with action:', action);
+
+            // console.log(action);
+            
 
             state.loading = false;
             state.isAuthenticated = true;
@@ -83,6 +87,8 @@ const authSlice = createSlice({
             state.expiresAt = Date.now() + action.payload.token.expires_in * 1000;
 
             state.user = action.payload.user;
+
+            console.log('Updated state:', state);
 
             // Save authentication
             sessionStorage.setItem(

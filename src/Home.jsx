@@ -117,9 +117,13 @@ const EmbeddedMessaging = () => {
 
 
 
-  return <div id="messaging-container">
+  return <div id="messaging-container" >
             
     This is HOME
+
+    
+    <br/>
+    
 
     <input
     type="text"

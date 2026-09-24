@@ -1,20 +1,18 @@
-# React + Vite
+# CV Parser & Data Cloud Pipeline
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack application that parses CVs, authenticates users via Auth0 and Salesforce SSO, stores credentials in Supabase, and processes data through Salesforce Data Cloud to create candidate records.
 
-Currently, two official plugins are available:
+## Architecture & Data Flow
+* **Ingestion API:** Receives parsed CV data from Express.
+* **Data Stream & DLO:** Ingests raw data into a Data Lake Object.
+* **DMO & Identity Resolution:** Maps data to a Data Model Object and unifies identities.
+* **Data Graph:** Exposes the unified profile.
+* **Batch Apex:** Filters the Data Graph and creates new candidate records in Salesforce.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
+* **Frontend:** React
+* **Backend:** Express.js
+* **Authentication & Identity:** Auth0 & Salesforce SSO
+* **Database:** Supabase (Credentials Storage)
+* **Processing & Storage:** Salesforce Data Cloud (Ingestion API, DLO, DMO, Identity Resolution, Data Graph) & Apex
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-<<<<<<< HEAD
-# demo-app-react
-=======
->>>>>>> 9f448ac (redux1.0)

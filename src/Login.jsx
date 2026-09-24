@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from './store/authSlice';
 
+
+
 function Login() {
 
     const dispatch = useDispatch();
@@ -25,7 +27,34 @@ function Login() {
         }
     };
 
+    const handleSalesforceLogin = async () => {
+    
+    const response_type = 'code';
+    const client_id = import.meta.env.VITE_SFOIDC_CLIENT_ID;    
+    const redirect_uri = import.meta.env.VITE_SF_REDIRECT_URI;
+    const verifier = import.meta.env.VITE_CODE_VERIFIER;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(verifier);
+    const digest = await window.crypto.subtle.digest('SHA-256', data);
+    const code_challenge = btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    console.log('Code Challenge:', code_challenge);
+    const code_challenge_method = 'S256';
+    const authUrl = `${import.meta.env.VITE_SF_INSTANCE_URL}/services/oauth2/authorize?response_type=${response_type}&client_id=${client_id}&redirect_uri=${encodeURIComponent(redirect_uri)}&code_challenge=${code_challenge}&code_challenge_method=${code_challenge_method}`;
+    // wait for 3 seconds before redirecting
+    setTimeout(() => {
+        window.location.href = authUrl;
+    }, 3000);
+    }
+
     useEffect(() => {
+        // console.log token if in url
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const exp = urlParams.get('exp'); 
+        if (token) {
+            dispatch(login({ email: null, password: null, token: token, expiresAt: exp }));
+        }
+
     if (isAuthenticated) 
         navigate('/home', { replace: true });
     
@@ -86,6 +115,13 @@ function Login() {
 
                     />
                 </div>
+                <button 
+                    type="button" 
+                    onClick={handleSalesforceLogin} 
+                    className="btn btn-primary w-100 rounded-0 mb-3"
+                >
+                    Salesforce Sign-In
+                </button>
                 <button type="submit" className="btn btn-success w-100 rounded-0">
                     Login
                 </button>

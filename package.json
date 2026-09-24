@@ -10,17 +10,28 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/genai": "^2.23.0",
     "@reduxjs/toolkit": "^2.12.0",
     "@supabase/supabase-js": "^2.105.3",
+    "@tailwindcss/vite": "^4.3.3",
     "axios": "^1.16.0",
     "bootstrap": "^5.3.8",
+    "connect-redis": "^10.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "groq-sdk": "^1.6.0",
+    "lucide-react": "^1.47.0",
+    "pdf2pic": "^3.2.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-markdown": "^10.1.0",
     "react-redux": "^9.3.0",
-    "react-router-dom": "^7.15.0"
+    "react-router-dom": "^7.15.0",
+    "redis": "^6.2.1",
+    "rehype-raw": "^7.0.0",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
