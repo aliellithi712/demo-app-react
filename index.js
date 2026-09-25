@@ -715,6 +715,7 @@ app.post('/api/agentforce/attachment', async (req, res) => {
                 Store them under "achievements".
                 Do not treat ordinary job responsibilities, awards, projects, or skills as certifications unless explicitly identified as such.
                 WORK EXPERIENCE.
+				"startDate" and "endDate": Must be strictly formatted as "YYYY-MM-01" (using "01" for the day if only month and year are provided). Return null if the date is entirely missing.
                 Extract each explicitly stated employment position.
                 Preserve the company, title, dates, and description exactly according to the available information.
                 If a specific value is missing, use null.
@@ -723,6 +724,7 @@ app.post('/api/agentforce/attachment', async (req, res) => {
                 - If a position is current or ongoing, set endDate explicitly to "Present".
                 - If an end date is missing for an active role, use "Present"; otherwise, default missing past end dates to today's date in MM/YYYY format.
                 EDUCATION.
+				"startDate" and "endDate": Must be strictly formatted as "YYYY-MM-01" (using "01" for the day if only month and year are provided). Return null if the date is entirely missing.
                 Extract only explicitly stated education information.
                 If a field is missing, use null.
                 NOT A RESUME DETECTION.
@@ -816,6 +818,28 @@ app.post('/api/agentforce/attachment', async (req, res) => {
 
 
         try {
+			
+			const parseDate = (d) => {
+				if (!d || typeof d !== 'string') return null;
+				const clean = d.trim();
+				
+				// If it's already full YYYY-MM-DD, keep it as-is
+				if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean;
+				
+				// Handle MM/YYYY
+				if (clean.includes('/')) {
+					const [m, y] = clean.split('/');
+					return `${y}-${m.padStart(2, '0')}-01`;
+				}
+				
+				// Handle YYYY-MM
+				if (/^\d{4}-\d{2}$/.test(clean)) {
+					return `${clean}-01`;
+				}
+				
+				return clean;
+			};
+
             const tmp = JSON.parse(response.text);
             const cand = tmp.candidate ?? tmp; // Handles both nested 'candidate' or flat object
 
@@ -877,8 +901,8 @@ app.post('/api/agentforce/attachment', async (req, res) => {
                 field_of_study: typeof item === "string" ? null : item?.fieldOfStudy ?? item?.field_of_study ?? null,
                 institution_name: typeof item === "string" ? null : item?.institution ?? item?.institution_name ?? null,
                 location: typeof item === "string" ? null : item?.location ?? null,
-                start_date: typeof item === "string" ? null : item?.startDate ?? item?.start_date ?? null,
-                end_date: typeof item === "string" ? null : item?.endDate ?? item?.end_date ?? null,
+                start_date: typeof item === "string" ? null : parseDate(item?.startDate ?? item?.start_date ?? null),
+                end_date: typeof item === "string" ? null : parseDate(item?.endDate ?? item?.end_date ?? null),
                 gpa: typeof item === "string" ? null : item?.gpa ?? null
             }));
 
@@ -889,8 +913,8 @@ app.post('/api/agentforce/attachment', async (req, res) => {
                 candidate_id: candidateId,
                 job_title: work?.JobTitle ?? work?.job_title ?? work?.title ?? null,
                 company_name: work?.company ?? work?.company_name ?? null,
-                start_date: work?.startDate ?? work?.start_date ?? null,
-                end_date: work?.endDate ?? work?.end_date ?? null,
+                start_date: parseDate(work?.startDate ?? work?.start_date ?? null),
+				end_date: parseDate(work?.endDate ?? work?.end_date ?? null),
                 is_current: work?.is_current ?? ((work?.endDate ?? work?.end_date ?? '').toLowerCase() === 'present')
             }));
 
